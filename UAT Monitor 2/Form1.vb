@@ -5,6 +5,8 @@
     Dim useronline As String
     Dim strUserName As String
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Me.DataGridView1.EnableHeadersVisualStyles = False
+        Me.TransparencyKey = Color.Green
         csvExport.Visible = False
         DataGridView1.AllowUserToAddRows = False
         status1.Text = "0 machines in queue..."
@@ -35,7 +37,7 @@
             tagger = TextBoxDrop.Lines(X).ToString
             DataGridView1.Rows.Add(tagger)
             Try
-                If My.Computer.Network.Ping(tagger, 1000) Then
+                If My.Computer.Network.Ping(tagger, 200) Then
                     Me.DataGridView1.Rows(X).Cells(1).Value = "Yes"
                 End If
             Catch ex As Exception
@@ -43,10 +45,12 @@
             End Try
             For i = 0 To DataGridView1.Rows.Count - 1
                 If DataGridView1.Rows(i).Cells(1).Value = "Yes" Then
-                    DataGridView1.Rows(i).DefaultCellStyle.BackColor = Color.LightSkyBlue
+                    DataGridView1.Rows(i).DefaultCellStyle.BackColor = Color.LightSlateGray
+                    DataGridView1.Rows(i).DefaultCellStyle.ForeColor = Color.Black
                 Else
                     If DataGridView1.Rows(i).Cells(1).Value = "No" Then
                         DataGridView1.Rows(i).DefaultCellStyle.BackColor = Color.Red
+                        DataGridView1.Rows(i).DefaultCellStyle.ForeColor = Color.Black
                     End If
                 End If
             Next
@@ -88,7 +92,7 @@
         If e.ColumnIndex = 0 Then
             Dim RDPStart As String = DataGridView1.Rows(e.RowIndex).Cells(0).Value.ToString
             Try
-                If My.Computer.Network.Ping(RDPStart) And DataGridView1.Rows(e.RowIndex).Cells(2).Value = "" Then
+                If My.Computer.Network.Ping(RDPStart, 200) And DataGridView1.Rows(e.RowIndex).Cells(2).Value = "" Then
                     System.Diagnostics.Process.Start("mstsc.exe", "/v:" & RDPStart)
                 End If
                 If DataGridView1.Rows(e.RowIndex).Cells(2).Value <> "" Then
@@ -145,5 +149,8 @@
             SaveFileDialog1.OverwritePrompt = True
             My.Computer.FileSystem.WriteAllText(SaveFileDialog1.FileName, "Date of export " & DateTime.Now.ToString("dd/MM/yyyy HH:mm") & Environment.NewLine & Environment.NewLine & StrExport, False)
         End If
+    End Sub
+    Private Sub PictureBox1_Click(sender As Object, e As EventArgs) Handles PictureBox1.Click
+        Application.Exit()
     End Sub
 End Class
